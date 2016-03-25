@@ -6,15 +6,15 @@ var request = require('request'),
 	bodyParser = require('body-parser'),
 	morgan = require('morgan'),
 	path = require('path'),
-	Iconv  = require('iconv').Iconv;
+	iconv  = require('iconv-lite');
 
 
 //configuration//
-var configDB = require('./config/database.js');
+//var configDB = require('./config/database.js');
 //var postModel = require('../app/models/post.js');
 
-mongoose.connect(configDB.url);//connect to our database
-
+//mongoose.connect(configDB.url);//connect to our database
+mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
 	app.use(morgan('dev'));
 	app.use(bodyParser.json()); //setting app to use bodyParser
 	app.set('view engine', 'ejs'); //set up ejs for templating
@@ -23,19 +23,24 @@ var postModel = mongoose.model('Post',{
 	title: String, 
 	url  : String
 });
-/*
-request('http://www.bhu.co.kr/', function(err, res, body){
+
+request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
+		
 		var $ = cheerio.load(body);
-		$('td.arr_new_list').each(function(){
+		$('td.subject').each(function(){
 		var newPost = $(this).find('a font').text();
 		var newHref = $(this).find('a').attr('href');
-			
+		newHref = newHref.replace("≀","&");
+		newHref = newHref.replace("id","wr_id");
+		newHref = newHref.replace("..",".");
+
 		var Post = new postModel({
 			title: newPost,
-			url: "bhu.co.kr"+ newHref
+			url: "http://www.bhu.co.kr"+ newHref
 		})
+		
 				Post.save(function(error){
 					if(error){
 						console.log(error);
@@ -49,22 +54,21 @@ request('http://www.bhu.co.kr/', function(err, res, body){
 	}
 
 });
-*/
+/*
 request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'binary'}, function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
-		var convertedCon = new Buffer(body, 'binary');
-		iconv = new Iconv('euc-kr', 'UTF8');
-		convertedCon = iconv.convert(convertedCon.toString());
+		var convertedCon = iconv.decode(body, 'euc-kr');
+		
 		var $ = cheerio.load(convertedCon);
 		$('td.list_vspace').each(function(){
 		var newPost = $(this).find('a font').text();
 		var newHref = $(this).find('a').attr('href');
-			
-		var Post = new postModel({
+			var Post = new postModel({
 			title: newPost,
 			url: "http://www.ppomppu.co.kr/zboard/"+ newHref
-		})
+		});
+		
 				Post.save(function(error){
 					if(error){
 						console.log(error);
@@ -79,6 +83,7 @@ request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'b
 
 });
 
+*/
 app.get('/', function (req, res){
 	
 	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
