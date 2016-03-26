@@ -10,18 +10,19 @@ var request = require('request'),
 
 
 //configuration//
-//var configDB = require('./config/database.js');
+var configDB = require('./config/database.js');
 //var postModel = require('../app/models/post.js');
 
-//mongoose.connect(configDB.url);//connect to our database
-mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
+mongoose.connect(configDB.url);//connect to our database
+//mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
 	app.use(morgan('dev'));
 	app.use(bodyParser.json()); //setting app to use bodyParser
 	app.set('view engine', 'ejs'); //set up ejs for templating
 
 var postModel = mongoose.model('Post',{
 	title: String, 
-	url  : String
+	url  : String,
+	image_url: String
 });
 
 request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
@@ -35,23 +36,46 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 		newHref = newHref.replace("≀","&");
 		newHref = newHref.replace("id","wr_id");
 		newHref = newHref.replace("..",".");
-
-		var Post = new postModel({
-			title: newPost,
-			url: "http://www.bhu.co.kr"+ newHref
-		})
+		var bhuUrl = "http://www.bhu.co.kr"+ newHref;
 		
-				Post.save(function(error){
+			request(bhuUrl, function(err, res, body){
+				if(!err && res.statusCode == 200) {
+				var $ = cheerio.load(body);
+				
+					var img_url = $('span div img').attr('src');
+
+					var Post = new postModel({
+						title: newPost,
+						url: bhuUrl,
+						image_url: img_url
+					})
+
+
+			//save data in Mongodb
+			Post.save(function(error){
 					if(error){
 						console.log(error);
 					}
 					else 
 						console.log(Post);
 				})
-				
+			//	
+
+
+			
+
+			}//if문
+
+			})//request
+
+			
+
+			
+		
+
 		});
 		
-	}
+	}//첫 if구문
 
 });
 /*
