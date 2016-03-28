@@ -24,7 +24,63 @@ var postModel = mongoose.model('Post',{
 	url  : String,
 	image_url: String
 });
+/*
+request('https://www.reddit.com/r/NSFW_GIF/?count=25&after=t3_4c75p4', function(err, res, body){
+	
+	if(!err && res.statusCode == 200) {
+		
+		var $ = cheerio.load(body);
+		$('td.subject').each(function(){
+		var newPost = $(this).find('a font').text();
+		var newHref = $(this).find('a').attr('href');
+		newHref = newHref.replace("≀","&");
+		newHref = newHref.replace("id","wr_id");
+		newHref = newHref.replace("..",".");
+		var bhuUrl = "http://www.bhu.co.kr"+ newHref;
+		
 
+			request(bhuUrl, function(err, res, body){
+				if(!err && res.statusCode == 200) {
+				var $ = cheerio.load(body);
+				
+					var img_url = $('span div img').attr('src');
+
+					
+
+			postModel.find({title: newPost}, function(err, newPosts){
+				
+				if (!newPosts.length){
+					//save data in Mongodb
+
+					var Post = new postModel({
+						title: newPost,
+						url: bhuUrl,
+						image_url: img_url
+					})
+			Post.save(function(error){
+					if(error){
+						console.log(error);
+					}
+					else 
+						console.log(Post);
+				})
+			//	
+				}
+
+			})
+			
+
+			}//if문
+
+			})//request
+
+			
+		});
+		
+	}//첫 if구문
+
+});
+*/
 request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
@@ -80,6 +136,32 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 	}//첫 if구문
 
 });
+
+app.param('id', function(req, res, next, id){
+	postModel.findById(id, function(err, docs){
+			if(err) res.json(err);
+			else
+			{
+				req.postId = docs;
+				next();
+			}
+		});	
+});
+
+app.get('/post/:id', function(req, res){
+	res.render('bhuIndivscraping.ejs', {post: req.postId});
+});
+
+app.get('/', function (req, res){
+	
+	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
+		if(err) res.json(err);
+		else 	res.render('bhuscraping.ejs', {postModel : all_postModels}
+				);
+		});
+});
+
+
 /*
 request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'binary'}, function(err, res, body){
 	
@@ -110,14 +192,6 @@ request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'b
 });
 
 */
-app.get('/', function (req, res){
-	
-	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
-		if(err) res.json(err);
-		else 	res.render('bhuscraping.ejs', {postModel : all_postModels}
-				);
-		});
-});
 
 // routes ======================================================================
 //require('./routes.js')(app); // load our routes and pass in our app
