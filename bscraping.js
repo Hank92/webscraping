@@ -10,10 +10,10 @@ var request = require('request'),
 
 
 //configuration//
-var configDB = require('./config/database.js');
+//var configDB = require('./config/database.js');
 //var postModel = require('../app/models/post.js');
 
-mongoose.connect(configDB.url);//connect to our database
+mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/o7wixEri");//connect to our database
 //mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
 	app.use(morgan('dev'));
 	app.use(bodyParser.json()); //setting app to use bodyParser
@@ -38,20 +38,25 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 		newHref = newHref.replace("..",".");
 		var bhuUrl = "http://www.bhu.co.kr"+ newHref;
 		
+
 			request(bhuUrl, function(err, res, body){
 				if(!err && res.statusCode == 200) {
 				var $ = cheerio.load(body);
 				
 					var img_url = $('span div img').attr('src');
 
+					
+
+			postModel.find({title: newPost}, function(err, newPosts){
+				
+				if (!newPosts.length){
+					//save data in Mongodb
+
 					var Post = new postModel({
 						title: newPost,
 						url: bhuUrl,
 						image_url: img_url
 					})
-
-
-			//save data in Mongodb
 			Post.save(function(error){
 					if(error){
 						console.log(error);
@@ -60,8 +65,9 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 						console.log(Post);
 				})
 			//	
+				}
 
-
+			})
 			
 
 			}//if문
@@ -69,10 +75,6 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 			})//request
 
 			
-
-			
-		
-
 		});
 		
 	}//첫 if구문
