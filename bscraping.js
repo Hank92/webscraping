@@ -139,16 +139,16 @@ app.param('id', function(req, res, next, id){
 		});	
 });
 
-app.get('/post/:id', function(req, res){
+app.get('/:id', function(req, res){
 	
-	res.render('bhuIndivscraping.ejs', {postModel: req.postId});
+	res.render('individualPost.ejs', {postModel: req.postId});
 });
 
-app.get('/post', function (req, res){
+app.get('/', function (req, res){
 	
 	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
 		if(err) res.json(err);
-		else 	res.render('bhuscraping.ejs', {postModel : all_postModels}
+		else 	res.render('mainPage.ejs', {postModel : all_postModels}
 				);
 		});
 });
@@ -190,5 +190,5 @@ request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'b
 //start the server
 app.listen(3000, function(){
 	console.log('Its running');
-})})
+})
 
