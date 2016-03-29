@@ -13,7 +13,7 @@ var request = require('request'),
 //var configDB = require('./config/database.js');
 //var postModel = require('../app/models/post.js');
 
-mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/o7wixEri");//connect to our database
+mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/yveGib5o");//connect to our database
 //mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
 	app.use(morgan('dev'));
 	app.use(bodyParser.json()); //setting app to use bodyParser
@@ -38,20 +38,16 @@ request('https://www.reddit.com/r/NSFW_GIF/?count=25&after=t3_4c75p4', function(
 		newHref = newHref.replace("..",".");
 		var bhuUrl = "http://www.bhu.co.kr"+ newHref;
 		
-
 			request(bhuUrl, function(err, res, body){
 				if(!err && res.statusCode == 200) {
 				var $ = cheerio.load(body);
 				
 					var img_url = $('span div img').attr('src');
-
 					
-
 			postModel.find({title: newPost}, function(err, newPosts){
 				
 				if (!newPosts.length){
 					//save data in Mongodb
-
 					var Post = new postModel({
 						title: newPost,
 						url: bhuUrl,
@@ -66,19 +62,14 @@ request('https://www.reddit.com/r/NSFW_GIF/?count=25&after=t3_4c75p4', function(
 				})
 			//	
 				}
-
 			})
 			
-
 			}//if문
-
 			})//request
-
 			
 		});
 		
 	}//첫 if구문
-
 });
 */
 request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
@@ -149,10 +140,11 @@ app.param('id', function(req, res, next, id){
 });
 
 app.get('/post/:id', function(req, res){
-	res.render('bhuIndivscraping.ejs', {post: req.postId});
+	
+	res.render('bhuIndivscraping.ejs', {postModel: req.postId});
 });
 
-app.get('/', function (req, res){
+app.get('/post', function (req, res){
 	
 	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
 		if(err) res.json(err);
@@ -188,9 +180,7 @@ request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'b
 		});
 		
 	}
-
 });
-
 */
 
 // routes ======================================================================
@@ -200,5 +190,5 @@ request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'b
 //start the server
 app.listen(3000, function(){
 	console.log('Its running');
-})
+})})
 
