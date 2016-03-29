@@ -1,0 +1,70 @@
+<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<head>
+    <title>공기대 어그로</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+  body {
+        background: #333;
+        }
+        /*
+  .thumbnail { float:left; padding : 1%; width:200px; height:auto; overflow: hidden; }
+.thumbnail img {height:auto; width:100%; margin:0 auto; }
+*/
+.thumbnail {
+   width: 260px;
+   height: 300px;
+   overflow: auto;
+ }
+
+.thumbnail > img {
+   width: 200px;
+   height: 200px;
+ }
+
+ .title {
+   width: 240px;
+   height: 90px;
+   position: absolute; bottom: 5px; 
+
+  h3 {
+     font-size: 12px;
+     margin: 2px;
+      }
+
+} 
+
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> 공기대</h1>
+    </div>
+
+   
+        <!-- LOCAL INFORMATION -->
+       <% postModel.forEach(function(postModels){ %>
+            <div class = "row">
+            <div class="col-sm-6 col-md-4">
+
+            <div class = "thumbnail">
+         <img src = "<%= postModels.image_url %>" alt = "이미지 로딩중..">
+            </div>
+            <div class = "title">
+            <a href= "/<%= postModels.id %>"><h3><%= postModels.title %></h3></a>
+            </div>
+            </div>
+            </div>
+
+                
+
+       <% })%>
+    
+
+</div>
+</body>
+</html>
