@@ -27,7 +27,7 @@
  .title {
    width: 240px;
    height: 90px;
-   position: absolute; bottom: 5px; 
+   position: relative; bottom: 5px; 
 
   h3 {
      font-size: 12px;
@@ -47,22 +47,23 @@
 
    
         <!-- LOCAL INFORMATION -->
-       <% postModel.forEach(function(postModels){ %>
+       <% for( var i = postModels.length-1; i > -1 ; i-- ) { %>
+
             <div class = "row">
             <div class="col-sm-6 col-md-4">
 
             <div class = "thumbnail">
-         <img src = "<%= postModels.image_url %>" alt = "이미지 로딩중..">
+         <img src = "<%= postModels[i].image_url %>" alt = "이미지 로딩중.." class="img-responsive>
             </div>
             <div class = "title">
-            <a href= "/<%= postModels.id %>"><h3><%= postModels.title %></h3></a>
+            <a href= "/<%= postModels[i].id %>"><h3><%= postModels[i].title %></h3></a>
             </div>
             </div>
             </div>
 
                 
 
-       <% })%>
+       <% }%>
     
 
 </div>
