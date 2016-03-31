@@ -23,11 +23,13 @@ var postModel = mongoose.model('Post',{
 	title: String, 
 	url  : String,
 	image_url: String,
+	comments: [] 
 });
-
+/*
 var commentModel = mongoose.model('Comment',{
 	content: String
 })
+*/
 /*
 request('https://www.reddit.com/r/NSFW_GIF/?count=25&after=t3_4c75p4', function(err, res, body){
 	
@@ -74,7 +76,7 @@ request('https://www.reddit.com/r/NSFW_GIF/?count=25&after=t3_4c75p4', function(
 	}//첫 if구문
 });
 */
-request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
+request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=36', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
 		
@@ -86,15 +88,18 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 		newHref = newHref.replace("id","wr_id");
 		newHref = newHref.replace("..",".");
 		var bhuUrl = "http://www.bhu.co.kr"+ newHref;
-	
+	 	
 			request(bhuUrl, function(err, res, body){
 				if(!err && res.statusCode == 200) {
 				var $ = cheerio.load(body);
-				
+				var comments =[];
 					var img_url = $('span div img').attr('src');
-					
-					
 
+					$('#commentContents').each(function(){
+						var comment = $(this).find('td div:nth-last-child(3)').text();
+							comments.push(comment); 	
+					})
+					
 			postModel.find({title: newPost}, function(err, newPosts){
 				
 				if (!newPosts.length){
@@ -104,7 +109,7 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 						title: newPost,
 						url: bhuUrl,
 						image_url: img_url,
-
+						comments: comments
 					})
 			Post.save(function(error){
 					if(error){
@@ -113,10 +118,10 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 					else 
 						console.log(Post);
 				})
-			//	
-				}
+			//post.save
+				}//if newPosts안에 있는 {}
 
-			})
+			})//postModel.find
 			
 
 			}//if문
@@ -186,57 +191,6 @@ request('http://bhu.co.kr/bbs/best.php', function(err, res, body){
 
 });
 
-/*
-request("http://www.dogdrip.net/userdog", function(err, res, body){
-	
-	if(!err && res.statusCode == 200) {
-		
-		var $ = cheerio.load(body);
-		$('tr.bg1').each(function(){
-		var newPost = $(this).find('td a').text();//title
-		var newHref = $(this).find('td a').attr('href');// url
-
-		request(newHref, function(err, res, body){
-				if(!err && res.statusCode == 200) {
-				var $ = cheerio.load(body);
-				
-					var img_url = $('#article_1').find('img').attr('src');
-
-			postModel.find({title: newPost}, function(err, newPosts){
-				
-				if (!newPosts.length){
-					//save data in Mongodb
-
-					var Post = new postModel({
-						title: newPost,
-						url: newHref,
-						image_url: img_url
-
-					})
-
-				Post.save(function(error){
-					if(error){
-						console.log(error);
-					}
-					else 
-						console.log(Post);
-				})
-	}
-
-			})
-			
-
-			}//if문
-
-			})//request
-
-			
-		});
-		
-	}//첫 if구문
-
-});
-*/
 app.param('id', function(req, res, next, id){
 	postModel.findById(id, function(err, docs){
 			if(err) res.json(err);
@@ -252,7 +206,7 @@ app.get('/:id', function(req, res){
 	
 	res.render('individualPost.ejs', {postModel: req.postId});
 });
-
+/*
 app.get('/:id', function(req, res){
 	
 	var Comment =new commentModel({
@@ -275,7 +229,7 @@ app.get('/:id', function(req, res){
 		else    res.render('individualPost.ejs', {commentModels : all_comments})
 	})
 })
-
+*/
 app.get('/', function (req, res){
 	
 	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
