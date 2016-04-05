@@ -9,164 +9,40 @@
     font-size:14px;
     font-weight: bold;
 }
-.comments-list .media{
-    border-bottom: 1px dotted #ccc;
-}
 
-.status-upload {
-background: none repeat scroll 0 0 #f5f5f5;
--webkit-border-radius: 4px;
--moz-border-radius: 4px;
--ms-border-radius: 4px;
--o-border-radius: 4px;
-border-radius: 4px;
-float: left;
-width: 100%;
-}
-.status-upload form {
-float: left;
-width: 100%;
-}
-.status-upload form textarea {
-background: none repeat scroll 0 0 #fff;
-border: medium none;
--webkit-border-radius: 4px 4px 0 0;
--moz-border-radius: 4px 4px 0 0;
--ms-border-radius: 4px 4px 0 0;
--o-border-radius: 4px 4px 0 0;
-border-radius: 4px 4px 0 0;
-color: #777777;
-float: left;
-font-family: Lato;
-font-size: 14px;
-height: 142px;
-letter-spacing: 0.3px;
-padding: 20px;
-width: 100%;
-resize:vertical;
-outline:none;
-border: 1px solid #F2F2F2;
-}
-
-.status-upload ul {
-float: left;
-list-style: none outside none;
-margin: 0;
-padding: 0 0 0 15px;
-width: auto;
-}
-.status-upload ul > li {
-float: left;
-}
-.status-upload ul > li > a {
--webkit-border-radius: 4px;
--moz-border-radius: 4px;
--ms-border-radius: 4px;
--o-border-radius: 4px;
-border-radius: 4px;
-color: #777777;
-float: left;
-font-size: 14px;
-height: 30px;
-line-height: 30px;
-margin: 10px 0 10px 10px;
-text-align: center;
--webkit-transition: all 0.4s ease 0s;
--moz-transition: all 0.4s ease 0s;
--ms-transition: all 0.4s ease 0s;
--o-transition: all 0.4s ease 0s;
-transition: all 0.4s ease 0s;
-width: 30px;
-cursor: pointer;
-}
-.status-upload ul > li > a:hover {
-background: none repeat scroll 0 0 #606060;
-color: #fff;
-}
-.status-upload form button {
-border: medium none;
--webkit-border-radius: 4px;
--moz-border-radius: 4px;
--ms-border-radius: 4px;
--o-border-radius: 4px;
-border-radius: 4px;
-color: #fff;
-float: right;
-font-family: Lato;
-font-size: 14px;
-letter-spacing: 0.3px;
-margin-right: 9px;
-margin-top: 9px;
-padding: 6px 15px;
-}
-.dropdown > a > span.green:before {
-border-left-color: #2dcb73;
-}
-.status-upload form button > i {
-margin-right: 7px;
-}
     </style>
 </head>
 
 <body>
 
-
-  <div class = "thumbnail">
+ <div class = "thumbnail">
   <div class = "title">
             <h3><%= postModel.title %></h3>
-          </div>
-         <img src = "<%= postModel.image_url %>" alt = "이미지 로딩중.." class="img-responsive>
-            
-          
   </div>
+         <img src = "<%= postModel.image_url %>" alt = "이미지 로딩중.." class="img-responsive">         
+ </div>
 
-  <div class="container">
-            <div class="row">
-                <div class="col-md-8">
-                  <div class="page-header">
-                    <h1><small class="pull-right">45 comments</small> 댓글 </h1>
-                  </div> 
-
-                  <div class="col-md-6">
-    						<div class="widget-area no-padding blank">
-								<div class="status-upload">
-									<form role="form" method="post" action="/:id" >
-										<div class="form-group">                  
-              								<textarea class="form-control" name="comment" id="individual-comment" placeholder= "댓글 달아주세요~" rows="6"></textarea>
-            							</div>
-										<button type="submit" class="btn btn-success green"><i class="fa fa-share"></i> 댓글 달기</button>
-									</form>
-								</div><!-- Status Upload  -->
-							</div><!-- Widget Area -->
-						</div>
-        
-    </div>
-
-                   <div class="comments-list">
+ 		 <% for( var i = 0; i < postModel.comments.length; i++ ) { %>
+ 		<div class="comments-list">
                        <div class="media">
-                           <p class="pull-right"><small>5 days ago</small></p>
-                            <a class="media-left" href="#">
-                              <img src="http://lorempixel.com/40/40/people/1/">
-                            </a>
+                            
                             <div class="media-body">
                                 
-                              <h4 class="media-heading user_name">Baltej Singh</h4>
-                               <% for( var i = 0; 0 > commentModels.length ; i++ ) { %>
-            						<%= commentModels[i].content %></h3></a>
- 
-       							<% })%>
+                              <%= postModel.comments[i].content %>
+                               
                               
-                              <p><small><a href="">Like</a> - <a href="">Share</a></small></p>
                             </div>
-                          </div>
+                        </div>
                        
-                   </div>
-                    
-                    
-                    
-                </div>
-            </div>
         </div>
+            <% }%>
+
+
+		
+                               
+                               
+       							
+       
 </body>
 
 </html>
