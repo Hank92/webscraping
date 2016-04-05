@@ -13,7 +13,7 @@ var request = require('request'),
 //var configDB = require('./config/database.js');
 //var postModel = require('../app/models/post.js');
 
-mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/nU4pigov");//connect to our database
+mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/Mynowu5x");//connect to our database
 //mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
 	app.use(morgan('dev'));
 	app.use(bodyParser.json()); //setting app to use bodyParser
@@ -22,7 +22,7 @@ mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/nU4pigov
 var postModel = mongoose.model('Post',{
 	title: String, 
 	url  : String,
-	image_url: String,
+	image_url: [String],
 	comments: [{
 		name: String,
 		content: String
@@ -64,7 +64,7 @@ request('https://www.reddit.com/user/PanKing92?count=25&after=t3_4d7svg', functi
 	}//첫 if구문
 });
 */
-request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
+request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=12', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
 		
@@ -81,12 +81,19 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 				if(!err && res.statusCode == 200) {
 				var $ = cheerio.load(body);
 				var comments = [];
-					var img_url = $('span div img').attr('src');
-					$("[style *= 'line-height: 180%']").each(function(){
-						var content = $(this).text();
+				var image_url = [];
+
+				$('span div img').each(function(){
+					var img_url = $(this).attr('src');
+					image_url.push(img_url);	
+				})
+				// scrape all the images for the post
+				
+					$("[style *= 'line-height: 180%']").each(function(index){
+						var content = index + $(this).text();
 							comments.push({content: content}); 	
-					})
-					
+					})//scrape all the comments for the post
+
 			postModel.find({title: bhuTitle}, function(err, newPosts){
 				
 				if (!newPosts.length){
@@ -95,7 +102,7 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 					var Post = new postModel({
 						title: bhuTitle,
 						url: bhuUrl,
-						image_url: img_url,
+						image_url: image_url,
 						comments: comments
 					})
 			Post.save(function(error){
@@ -206,7 +213,7 @@ app.get('/', function (req, res){
 
 //start the server
 app.listen(3000, function(){
-	console.log('reddit is running');
+	console.log('Its running');
 })
 
 
