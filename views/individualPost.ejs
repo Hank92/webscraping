@@ -19,7 +19,12 @@
   <div class = "title">
             <h3><%= postModel.title %></h3>
   </div>
-         <img src = "<%= postModel.image_url %>" alt = "이미지 로딩중.." class="img-responsive">         
+  //display all the images for the post in thumbnail format
+
+        <% for( var i = 0; i < postModel.image_url.length; i++ ) { %> 
+         <img src = "<%= postModel.image_url[i] %>" alt = "이미지 로딩중.." class="img-responsive">     
+         </br></br>   
+         <% }%> 
  </div>
 
  		 <% for( var i = 0; i < postModel.comments.length; i++ ) { %>
