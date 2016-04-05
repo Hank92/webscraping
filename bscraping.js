@@ -13,7 +13,7 @@ var request = require('request'),
 //var configDB = require('./config/database.js');
 //var postModel = require('../app/models/post.js');
 
-mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/yveGib5o");//connect to our database
+mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/nU4pigov");//connect to our database
 //mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
 	app.use(morgan('dev'));
 	app.use(bodyParser.json()); //setting app to use bodyParser
@@ -23,40 +23,30 @@ var postModel = mongoose.model('Post',{
 	title: String, 
 	url  : String,
 	image_url: String,
-	comments: [] 
+	comments: [{
+		name: String,
+		content: String
+	}],
 });
 /*
-var commentModel = mongoose.model('Comment',{
-	content: String
-})
-*/
-/*
-request('https://www.reddit.com/r/NSFW_GIF/?count=25&after=t3_4c75p4', function(err, res, body){
+request('https://www.reddit.com/user/PanKing92?count=25&after=t3_4d7svg', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
 		
 		var $ = cheerio.load(body);
-		$('#siteTable').each(function(){
-		var newPost = $(this).find('p a').attr('href');
-		var newHref = $(this).find('a').attr('href');
-		var image_url = $(this).find('a img').attr('src');
+		$('a.title', '#siteTable').each(function(){
+		var newTitle = $(this).text();
+		var image_url= $(this).attr('href');
 		
-		
-			request(bhuUrl, function(err, res, body){
-				if(!err && res.statusCode == 200) {
-				var $ = cheerio.load(body);
-				
-					var img_url = $('span div img').attr('src');
-					
-			postModel.find({title: newPost}, function(err, newPosts){
+			postModel.find({title: newTitle}, function(err, newPosts){
 				
 				if (!newPosts.length){
 					//save data in Mongodb
 					var Post = new postModel({
-						title: newPost,
-						url: bhuUrl,
-						image_url: img_url
+						title: newTitle,
+						image_url: image_url
 					})
+
 			Post.save(function(error){
 					if(error){
 						console.log(error);
@@ -64,25 +54,23 @@ request('https://www.reddit.com/r/NSFW_GIF/?count=25&after=t3_4c75p4', function(
 					else 
 						console.log(Post);
 				})
-			//	
-				}
-			})
+			//post/save	
+				
+			}//if!newPosts
+			})//find title: newTitle
 			
-			}//if문
-			})//request
-			
-		});
+		});//each function
 		
 	}//첫 if구문
 });
 */
-request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=36', function(err, res, body){
+request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
 		
 		var $ = cheerio.load(body);
 		$('td.subject').each(function(){
-		var newPost = $(this).find('a font').text();
+		var bhuTitle = $(this).find('a font').text();
 		var newHref = $(this).find('a').attr('href');
 		newHref = newHref.replace("≀","&");
 		newHref = newHref.replace("id","wr_id");
@@ -92,21 +80,20 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=36', function(err, re
 			request(bhuUrl, function(err, res, body){
 				if(!err && res.statusCode == 200) {
 				var $ = cheerio.load(body);
-				var comments =[];
+				var comments = [];
 					var img_url = $('span div img').attr('src');
-
-					$('#commentContents').each(function(){
-						var comment = $(this).find('td div:nth-last-child(3)').text();
-							comments.push(comment); 	
+					$("[style *= 'line-height: 180%']").each(function(){
+						var content = $(this).text();
+							comments.push({content: content}); 	
 					})
 					
-			postModel.find({title: newPost}, function(err, newPosts){
+			postModel.find({title: bhuTitle}, function(err, newPosts){
 				
 				if (!newPosts.length){
 					//save data in Mongodb
 
 					var Post = new postModel({
-						title: newPost,
+						title: bhuTitle,
 						url: bhuUrl,
 						image_url: img_url,
 						comments: comments
@@ -119,7 +106,7 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=36', function(err, re
 						console.log(Post);
 				})
 			//post.save
-				}//if newPosts안에 있는 {}
+				}//if bhuTitle안에 있는 {}
 
 			})//postModel.find
 			
@@ -135,6 +122,7 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=36', function(err, re
 
 });
 
+/*
 request('http://bhu.co.kr/bbs/best.php', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
@@ -190,7 +178,7 @@ request('http://bhu.co.kr/bbs/best.php', function(err, res, body){
 	}//첫 if구문
 
 });
-
+*/
 app.param('id', function(req, res, next, id){
 	postModel.findById(id, function(err, docs){
 			if(err) res.json(err);
@@ -205,33 +193,10 @@ app.param('id', function(req, res, next, id){
 app.get('/:id', function(req, res){
 	
 	res.render('individualPost.ejs', {postModel: req.postId});
-});
-/*
-app.get('/:id', function(req, res){
-	
-	var Comment =new commentModel({
-		content: req.body.content
-	});
-
-	Comment.save(function(err){
-		if (err){
-			console.log("error!")
-		} else {
-			res.redirect('/:id')
-		};
-
-	});
+	console.log(req.postId)//finds the matching object
 });
 
-app.get('/:id', function(req, res){
-	commentModel.find({}, function(err, all_comments){
-		if(err) res.json(err);
-		else    res.render('individualPost.ejs', {commentModels : all_comments})
-	})
-})
-*/
-app.get('/', function (req, res){
-	
+app.get('/', function (req, res){	
 	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
 		if(err) res.json(err);
 		else 	res.render('mainPage.ejs', {postModels : all_postModels}
@@ -241,37 +206,9 @@ app.get('/', function (req, res){
 
 //start the server
 app.listen(3000, function(){
-	console.log('Its running');
+	console.log('reddit is running');
 })
 
-/*
-request({url: 'http://www.ppomppu.co.kr/zboard/zboard.php?id=humor', encoding:'binary'}, function(err, res, body){
-	
-	if(!err && res.statusCode == 200) {
-		var convertedCon = iconv.decode(body, 'euc-kr');
-		
-		var $ = cheerio.load(convertedCon);
-		$('td.list_vspace').each(function(){
-		var newPost = $(this).find('a font').text();
-		var newHref = $(this).find('a').attr('href');
-			var Post = new postModel({
-			title: newPost,
-			url: "http://www.ppomppu.co.kr/zboard/"+ newHref
-		});
-		
-				Post.save(function(error){
-					if(error){
-						console.log(error);
-					}
-					else 
-						console.log(Post);
-				})
-				
-		});
-		
-	}
-});
-*/
 
 // routes ======================================================================
 //require('./routes.js')(app); // load our routes and pass in our app
