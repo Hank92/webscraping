@@ -7,7 +7,7 @@ var request = require('request'),
 	morgan = require('morgan'),
 	path = require('path'),
 	iconv  = require('iconv-lite');
-
+	//mongoosePaginate = require('mongoose-paginate');
 
 //configuration//
 //var configDB = require('./config/database.js');
@@ -16,54 +16,31 @@ var request = require('request'),
 mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/Mynowu5x");//connect to our database
 //mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
 	app.use(morgan('dev'));
-	app.use(bodyParser.json()); //setting app to use bodyParser
+	app.use(bodyParser());// pull information from html in POST
+	app.use(bodyParser.json());	 //setting app to use bodyParser
+	app.use(bodyParser.urlencoded());
+	 
 	app.set('view engine', 'ejs'); //set up ejs for templating
 
-var postModel = mongoose.model('Post',{
-	title: String, 
+
+
+var postSchema = mongoose.Schema({
+         title: String, 
 	url  : String,
 	image_url: [String],
 	comments: [{
 		name: String,
 		content: String
 	}],
-});
-/*
-request('https://www.reddit.com/user/PanKing92?count=25&after=t3_4d7svg', function(err, res, body){
-	
-	if(!err && res.statusCode == 200) {
-		
-		var $ = cheerio.load(body);
-		$('a.title', '#siteTable').each(function(){
-		var newTitle = $(this).text();
-		var image_url= $(this).attr('href');
-		
-			postModel.find({title: newTitle}, function(err, newPosts){
-				
-				if (!newPosts.length){
-					//save data in Mongodb
-					var Post = new postModel({
-						title: newTitle,
-						image_url: image_url
-					})
+	userComments: [{
+		userPost: String
+	}]
 
-			Post.save(function(error){
-					if(error){
-						console.log(error);
-					}
-					else 
-						console.log(Post);
-				})
-			//post/save	
-				
-			}//if!newPosts
-			})//find title: newTitle
-			
-		});//each function
-		
-	}//첫 if구문
-});
-*/
+     });
+     //postSchema.plugin(mongoosePaginate);
+     var postModel = mongoose.model('Post', postSchema);
+
+
 request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=12', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
@@ -112,6 +89,17 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=12', function(err, re
 					else 
 						console.log(Post);
 				})
+/*
+			 postModel.paginate({}, { page: 1, limit: 1 }, function(err, results,
+pageCount, itemCount) {
+         if(err){
+         console.log("error");
+         console.log(err);
+     } else {
+         console.log(results);
+     }
+     });
+     */
 			//post.save
 				}//if bhuTitle안에 있는 {}
 
@@ -129,63 +117,6 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=12', function(err, re
 
 });
 
-/*
-request('http://bhu.co.kr/bbs/best.php', function(err, res, body){
-	
-	if(!err && res.statusCode == 200) {
-		
-		var $ = cheerio.load(body);
-		$('td.subject').each(function(){
-		var newPost = $(this).find('a font').text();
-		var newHref = $(this).find('a').attr('href');
-		newHref = newHref.replace("≀","&");
-		newHref = newHref.replace("id","wr_id");
-		newHref = newHref.replace("..",".");
-		var bhuUrl = "http://www.bhu.co.kr"+ newHref;
-	
-			request(bhuUrl, function(err, res, body){
-				if(!err && res.statusCode == 200) {
-				var $ = cheerio.load(body);
-				
-					var img_url = $('span div img').attr('src');
-					
-					
-
-			postModel.find({title: newPost}, function(err, newPosts){
-				
-				if (!newPosts.length){
-					//save data in Mongodb
-
-					var Post = new postModel({
-						title: newPost,
-						url: bhuUrl,
-						image_url: img_url,
-
-					})
-			Post.save(function(error){
-					if(error){
-						console.log(error);
-					}
-					else 
-						console.log(Post);
-				})
-			//	
-				}
-
-			})
-			
-
-			}//if문
-
-			})//request
-
-			
-		});
-		
-	}//첫 if구문
-
-});
-*/
 app.param('id', function(req, res, next, id){
 	postModel.findById(id, function(err, docs){
 			if(err) res.json(err);
@@ -197,13 +128,28 @@ app.param('id', function(req, res, next, id){
 		});	
 });
 
-app.get('/:id', function(req, res){
-	
-	res.render('individualPost.ejs', {postModel: req.postId});
-	console.log(req.postId)//finds the matching object
+app.get('/posts/:id', function(req, res){
+	var postId = req.postId;
+	postId.userComments.push({ userPost: req.query.userPost});
+	postId.save();
+	res.render('individualPost.ejs', {postModel: postId});
+	console.log(postId)//finds the matching object
 });
 
-app.get('/', function (req, res){	
+app.post('/posts/:id', function (req, res){
+
+	postModel.find({_id: req.params.id}, function(err, item){
+		if(err) return next("error finding blog post.");
+		item[0].userComments.push({userPost : req.body.userPost})
+		item[0].save(function(err, data){
+			if (err) res.send(err)
+			else res.redirect('/posts/' + req.params.id)
+		});
+	})
+
+}) //app.post
+
+app.get('/posts', function (req, res){	
 	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
 		if(err) res.json(err);
 		else 	res.render('mainPage.ejs', {postModels : all_postModels}
