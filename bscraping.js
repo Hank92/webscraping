@@ -7,7 +7,7 @@ var request = require('request'),
 	morgan = require('morgan'),
 	path = require('path'),
 	iconv  = require('iconv-lite');
-	//mongoosePaginate = require('mongoose-paginate');
+	mongoosePaginate = require('mongoose-paginate');
 
 //configuration//
 //var configDB = require('./config/database.js');
@@ -37,11 +37,12 @@ var postSchema = mongoose.Schema({
 	}]
 
      });
-     //postSchema.plugin(mongoosePaginate);
+
+     postSchema.plugin(mongoosePaginate);
      var postModel = mongoose.model('Post', postSchema);
 
 
-request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=12', function(err, res, body){
+request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
 	
 	if(!err && res.statusCode == 200) {
 		
@@ -89,17 +90,7 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=12', function(err, re
 					else 
 						console.log(Post);
 				})
-/*
-			 postModel.paginate({}, { page: 1, limit: 1 }, function(err, results,
-pageCount, itemCount) {
-         if(err){
-         console.log("error");
-         console.log(err);
-     } else {
-         console.log(results);
-     }
-     });
-     */
+
 			//post.save
 				}//if bhuTitle안에 있는 {}
 
@@ -147,14 +138,42 @@ app.post('/posts/:id', function (req, res){
 		});
 	})
 
-}) //app.post
+}) //app.post    
 
-app.get('/posts', function (req, res){	
-	postModel.find({}, function(err, all_postModels){ //find( {} )fetch all data
-		if(err) res.json(err);
-		else 	res.render('mainPage.ejs', {postModels : all_postModels}
-				);
-		});
+app.get('/posts', function (req, res){
+	var currentPage = 1;
+	if (typeof req.query.page !== 'undefined') {
+        currentPage = +req.query.page;
+    	}
+    	postModel.find({}, function (req, all_postModels){
+    		var pageNumber = (all_postModels.length)/3;
+			pageNumber = Math.ceil(pageNumber) + 1;
+			pageNumber = pageNumber - currentPage;
+			console.log(pageNumber)
+			postModel.paginate({}, { page: pageNumber, limit: 3 }, function(err, results) {
+         if(err){
+         console.log("error");
+         console.log(err);
+     } else {
+    	var pageSize = results.limit;
+    	var pageCount = (results.total)/(results.limit);
+    	pageCount = Math.ceil(pageCount);
+    	var totalPosts = results.total;
+
+    	res.render('mainPage.ejs', {
+    		postModels: results.docs,
+    		pageSize: pageSize,
+    		pageCount: pageCount,
+    		totalPosts: totalPosts,
+    		currentPage: currentPage
+    	})//res.render
+     }//else
+     });//paginate
+
+
+    	})	
+	
+
 });
 
 //start the server
