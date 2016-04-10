@@ -1,4 +1,4 @@
-<!-- views/profile.ejs -->
+<!-- views/mainPage.ejs -->
 <!doctype html>
 <html>
 <head>
@@ -6,13 +6,11 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
     <style>
-  body {
-        background: #333;
-        }
-        /*
+  
+        
   .thumbnail { float:left; padding : 1%; width:200px; height:auto; overflow: hidden; }
 .thumbnail img {height:auto; width:100%; margin:0 auto; }
-*/
+
 .thumbnail {
    width: 260px;
    height: 300px;
@@ -47,7 +45,7 @@
 
    
         <!-- LOCAL INFORMATION -->
-       <% for( var i = postModels.length-1; i > -1 ; i-- ) { %>
+       <% for(var i = postModels.length-1; i > -1 ; i--  ) { %>
 
             <div class = "row">
             <div class="col-sm-6 col-md-4">
@@ -56,16 +54,43 @@
          <img src = "<%= postModels[i].image_url %>" alt = "이미지 로딩중.." class="img-responsive>
             </div>
             <div class = "title">
-            <a href= "/<%= postModels[i].id %>"><h3><%= postModels[i].title %></h3></a>
+            <a href= "/posts/<%= postModels[i].id %>"><h3><%= postModels[i].title %></h3></a>
             </div>
             </div>
             </div>
-
-                
-
        <% }%>
+
+
     
 
 </div>
+
+<% if (pageCount > 1) { %>  
+<ul class="pagination">  
+  <% if (currentPage > 1) { %>
+      <li><a href="/posts/?page=1">&laquo;</a></li>
+  <% } %>
+  <% var i = 1;
+  if (currentPage > 5) {
+  i = +currentPage - 4;
+  } %>
+  <% if (i !== 1) { %>
+      <li class="disabled"><a href="#">...</a></li>
+  <% } %>
+  <% for (i; i<=pageCount; i++) { %>
+    <% if (currentPage == i) { %>
+        <li class="active"><span><%= i %> <span class="sr-only">(current)</span></span></li>
+    <% } else { %>
+        <li><a href="/posts/?page=<%= i %>"><%= i %></a></li>
+    <% } %>
+    <% if (i == (currentPage + 4)) { %>
+        <li class="disabled"><a href="#">...</a></li>
+    <% break; } %>
+  <% } %>
+  <% if (currentPage != pageCount) { %>
+      <li><a href="/posts/?page=<%= pageCount %>">&raquo;</a></li>
+  <% } %>
+</ul>  
+<% } %>  
 </body>
 </html>
