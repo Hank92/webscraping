@@ -72,6 +72,8 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 							comments.push({content: content}); 	
 					})//scrape all the comments for the post
 
+					comments.splice(0,1)
+
 			postModel.find({title: bhuTitle}, function(err, newPosts){
 				
 				if (!newPosts.length){
@@ -140,26 +142,31 @@ app.post('/posts/:id', function (req, res){
 
 }) //app.post    
 
+app.get('/', function (req, res){
+	res.render('main.ejs');
+});
+
+app.get('/incheonAirportPolice', function (req, res){
+	res.render('incheonAirportPolice.ejs');
+});
+
 app.get('/posts', function (req, res){
 	var currentPage = 1;
 	if (typeof req.query.page !== 'undefined') {
         currentPage = +req.query.page;
     	}
-    	postModel.find({}, function (req, all_postModels){
-    		var pageNumber = (all_postModels.length)/3;
-			pageNumber = Math.ceil(pageNumber) + 1;
-			pageNumber = pageNumber - currentPage;
-			console.log(pageNumber)
-			postModel.paginate({}, { page: pageNumber, limit: 3 }, function(err, results) {
+			postModel.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 10 }, function(err, results) {
          if(err){
          console.log("error");
          console.log(err);
      } else {
-    	var pageSize = results.limit;
-    	var pageCount = (results.total)/(results.limit);
-    	pageCount = Math.ceil(pageCount);
-    	var totalPosts = results.total;
-
+    	var pageNumber = (results.length)/3;
+			pageNumber = Math.ceil(pageNumber) ;
+    	    pageSize = results.limit;
+            pageCount = (results.total)/(results.limit);
+    		pageCount = Math.ceil(pageCount);
+    	    totalPosts = results.total;
+    	console.log(results.docs)
     	res.render('mainPage.ejs', {
     		postModels: results.docs,
     		pageSize: pageSize,
@@ -169,11 +176,7 @@ app.get('/posts', function (req, res){
     	})//res.render
      }//else
      });//paginate
-
-
-    	})	
 	
-
 });
 
 //start the server
