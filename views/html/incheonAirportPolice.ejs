@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex">
+
+    <title>인천공항기동대</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+
+    <link rel='stylesheet' href='/css/incheonAirportPolice.css'>    
+</head>
+
+<body>
+  <div class="row affix-row">
+    <div class="col-sm-3 col-md-2 affix-sidebar">
+    <div class="sidebar-nav">
+  <div class="navbar navbar-inverse" role="navigation">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <span class="visible-xs navbar-brand">Sidebar menu</span>
+    </div>
+    <div class="navbar-collapse collapse sidebar-navbar-collapse">
+      <ul class="nav navbar-nav" id="sidenav01">
+        <li class="active">
+          <a href="/" >
+          <h4>
+          APKR
+          </h4>
+          </a>
+        </li>
+        <li><a href="#"><span class="glyphicon glyphicon-lock"></span> APKR 소개</a></li>
+        <li class = "active">
+          <a href="#" data-toggle="collapse" data-target="#toggleDemo" data-parent="#sidenav01" class="collapsed">
+          <span class="glyphicon glyphicon-cloud"></span> 인천  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;<span class="caret"></span>
+          </a>
+          <div class="collapse" id="toggleDemo" style="height: 0px;">
+            <ul class="nav nav-list">
+              <li class = "active"><a href="#">인천공항기동대</a></li>
+              <li><a href="#">기마대</a></li>
+              <li><a href="#">119 타격대</a></li>
+              <li><a href="#">교통 6중대</a></li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a href="#" data-toggle="collapse" data-target="#toggleDemo2" data-parent="#sidenav01" class="collapsed">
+          <span class="glyphicon glyphicon-inbox"></span> 서울 <span class="caret pull-right"></span>
+          </a>
+          <div class="collapse" id="toggleDemo2" style="height: 0px;">
+            <ul class="nav nav-list">
+              <li><a href="#">Submenu2.1</a></li>
+              <li><a href="#">Submenu2.2</a></li>
+              <li><a href="#">Submenu2.3</a></li>
+            </ul>
+          </div>
+        </li>
+        <li><a href="#"><span class="glyphicon glyphicon-lock"></span> 자유게시판</a></li>
+        <li><a href="/humor_board"><span class="glyphicon glyphicon-calendar"></span> 유머게시판<span class="badge pull-right">42</span></a></li>
+        <li><a href="/login"><span class="glyphicon glyphicon-cog"></span> 로그인</a></li>
+        <li><a href="/signup"><span class="glyphicon glyphicon-cog"></span> 계정 만들기</a></li>
+      </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+  </div>
+
+  <div class="col-sm-9 col-md-10 affix-content">
+    <div class="container">
+      
+    <div class="page-header">
+     <button class="btn pull-right" data-toggle="modal" data-target="#myModal">
+        <span class="glyphicon glyphicon-plus"></span> 댓글 달기
+      </button>
+      <h3><span class="glyphicon glyphicon-th-list"></span> 인천공항기동대</h3>
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">댓글 달기</h4>
+              </div>
+
+
+              <div class="modal-body">
+                <form role="form" method="post" action="/incheonAirportPolice" > 
+                  <div class="form-group">
+                   
+                    이메일  <div class="form-group">
+                    <input type="text" class="form-control" name="nickname" id="disabledInput" value="<%= user.local.email %>" title = "이메일을 변경하시면 삭제 권한을 잃게됩니다" required>
+                    </div>
+
+                  </div>
+
+                   댓글 
+                   <div class="form-group">                  
+                    <textarea class="form-control" name="text" id="incheonAirportUser-post" placeholder="회원만 댓글을 달 수 있습니다" rows="6"></textarea>
+                  </div>
+
+                <div class="modal-footer">                
+                <button type="submit" id = "sub" class="btn btn-primary pull-right">댓글 달기</button> 
+                </form>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+      </div>
+
+<p>
+  <div class="panel panel-default">
+        <div class="panel-body">
+공항기동대는 총원 100명에 보직은 순찰, 교통, 핸들러, 행정반이 있다. 공항 근처에서 지내고 있으며 컨테이너 박스에서 생활하고 있다는점이 특이하다. 외면상으로 보면 환경이 열악해 보여서 충격 먹을 수 있지만, 컨테이너 실내 시설은 인천 최고임을 자부하고 있다. 영화관, 탁구대 두개, 컴퓨터 6대, 휴게실, 도서관, 수면실 등등이 있다. 구성원의 절반이 특기병(영어, 중국어, 일본어, 스페인어, 러시아, 아랍어 등)으로 이뤄져 있으며, 인천청에 특기병으로 지원한다면 공항기동대로 배치 받는다. 부대 내 분위기는 매우 좋다고 할 수 있다. 구타 욕설 없음.
+        </div>
+  </div>
+</p>
+
+<h3><span class="glyphicon glyphicon-th-list"></span> 댓글</h3>
+
+<% for(var i = 0; i < incheonPosts.length ; i++  ) { %>
+
+
+  <div class="panel panel-default">
+                <div class="panel-body">
+                  <header class="text-left">
+                    <div class="comment-user">닉네임: <%= incheonPosts[i].nickname %> <time style = "float: right"><span class="glyphicon glyphicon-time"></span> <%= incheonPosts[i].posted.toLocaleDateString() %></time></div> 
+                  </header>
+                  </br>
+                    </button>&nbsp; &nbsp; 
+                    <form method="post" action="/incheonAirportPolice/<%= incheonPosts[i].id %>"><input type="hidden" name="_method" value="DELETE"><button type="submit" style = "float: right" id = "deleteIncheonPost" class="btn btn-primary pull-right">삭제</button> </form> 
+                  <div class="comment-post">
+                    <p>내용:
+                     <%= incheonPosts[i].text %>
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <% }%>
+
+  <div style = "float: right">
+              <% if (pageCount > 1) { %>  
+<ul class="pagination">  
+  <% if (currentPage > 1) { %>
+      <li><a href="/incheonAirportPolice/?page=1">&laquo;</a></li>
+  <% } %>
+  <% var i = 1;
+  if (currentPage > 5) {
+  i = +currentPage - 4;
+  } %>
+  <% if (i !== 1) { %>
+      <li class="disabled"><a href="#">...</a></li>
+  <% } %>
+  <% for (i; i<=pageCount; i++) { %>
+    <% if (currentPage == i) { %>
+        <li class="active"><span><%= i %> <span class="sr-only">(current)</span></span></li>
+    <% } else { %>
+        <li><a href="/incheonAirportPolice/?page=<%= i %>"><%= i %></a></li>
+    <% } %>
+    <% if (i == (currentPage + 4)) { %>
+        <li class="disabled"><a href="#">...</a></li>
+    <% break; } %>
+  <% } %>
+  <% if (currentPage != pageCount) { %>
+      <li><a href="/incheonAirportPolice/?page=<%= pageCount %>">&raquo;</a></li>
+  <% } %>
+</ul>  
+<% } %> 
+</div>
+  
+</div>
+
+             
+    </div>
+
+
+  </div>
+</div>
+  
+
+</body>
+</html>

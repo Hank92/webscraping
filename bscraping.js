@@ -4,180 +4,41 @@ var request = require('request'),
 	app = express(),
 	mongoose = require('mongoose'),
 	bodyParser = require('body-parser'),
+	passport = require('passport'),
+	flash = require('connect-flash'),
+	methodOverride = require('method-override');
+
 	morgan = require('morgan'),
 	path = require('path'),
-	iconv  = require('iconv-lite');
+	cookieParser = require('cookie-parser'),
+	session      = require('express-session');
 	mongoosePaginate = require('mongoose-paginate');
 
 //configuration//
-//var configDB = require('./config/database.js');
-//var postModel = require('../app/models/post.js');
+var configDB = require('./config/database.js');
+mongoose.connect(configDB.url);
 
-mongoose.connect("mongodb://hongjik:bjhv6c@jello.modulusmongo.net:27017/Mynowu5x");//connect to our database
-//mongoose.connect("mongodb://hongjik92:bjhv6c@jello.modulusmongo.net:27017/nudoB9ad");
-	app.use(morgan('dev'));
+require('./config/passport')(passport); // pass passport for configuration
+
+	app.use(express.static(path.normalize(__dirname) + '/views'))
+	app.use(morgan('dev')); // log every request to the console
 	app.use(bodyParser());// pull information from html in POST
 	app.use(bodyParser.json());	 //setting app to use bodyParser
 	app.use(bodyParser.urlencoded());
-	 
+	app.use(cookieParser());
+	app.use(methodOverride());
+
+	app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret	app.use(passport.initialize());
+	app.use(passport.initialize());
+	app.use(passport.session());
+	app.use(flash());
+
+	app.set('views', path.normalize(__dirname) + '/views/html');
+	app.set('view engine', 'html')
 	app.set('view engine', 'ejs'); //set up ejs for templating
 
-
-
-var postSchema = mongoose.Schema({
-         title: String, 
-	url  : String,
-	image_url: [String],
-	comments: [{
-		name: String,
-		content: String
-	}],
-	userComments: [{
-		userPost: String
-	}]
-
-     });
-
-     postSchema.plugin(mongoosePaginate);
-     var postModel = mongoose.model('Post', postSchema);
-
-
-request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res, body){
-	
-	if(!err && res.statusCode == 200) {
-		
-		var $ = cheerio.load(body);
-		$('td.subject').each(function(){
-		var bhuTitle = $(this).find('a font').text();
-		var newHref = $(this).find('a').attr('href');
-		newHref = newHref.replace("≀","&");
-		newHref = newHref.replace("id","wr_id");
-		newHref = newHref.replace("..",".");
-		var bhuUrl = "http://www.bhu.co.kr"+ newHref;
-	 	
-			request(bhuUrl, function(err, res, body){
-				if(!err && res.statusCode == 200) {
-				var $ = cheerio.load(body);
-				var comments = [];
-				var image_url = [];
-
-				$('span div img').each(function(){
-					var img_url = $(this).attr('src');
-					image_url.push(img_url);	
-				})
-				// scrape all the images for the post
-				
-					$("[style *= 'line-height: 180%']").each(function(index){
-						var content = index + $(this).text();
-							comments.push({content: content}); 	
-					})//scrape all the comments for the post
-
-					comments.splice(0,1)
-
-			postModel.find({title: bhuTitle}, function(err, newPosts){
-				
-				if (!newPosts.length){
-					//save data in Mongodb
-
-					var Post = new postModel({
-						title: bhuTitle,
-						url: bhuUrl,
-						image_url: image_url,
-						comments: comments
-					})
-			Post.save(function(error){
-					if(error){
-						console.log(error);
-					}
-					else 
-						console.log(Post);
-				})
-
-			//post.save
-				}//if bhuTitle안에 있는 {}
-
-			})//postModel.find
-			
-
-			}//if문
-
-			})//request
-
-			
-		});
-		
-	}//첫 if구문
-
-});
-
-app.param('id', function(req, res, next, id){
-	postModel.findById(id, function(err, docs){
-			if(err) res.json(err);
-			else
-			{
-				req.postId = docs;
-				next();
-			}
-		});	
-});
-
-app.get('/posts/:id', function(req, res){
-	var postId = req.postId;
-	postId.userComments.push({ userPost: req.query.userPost});
-	postId.save();
-	res.render('individualPost.ejs', {postModel: postId});
-	console.log(postId)//finds the matching object
-});
-
-app.post('/posts/:id', function (req, res){
-
-	postModel.find({_id: req.params.id}, function(err, item){
-		if(err) return next("error finding blog post.");
-		item[0].userComments.push({userPost : req.body.userPost})
-		item[0].save(function(err, data){
-			if (err) res.send(err)
-			else res.redirect('/posts/' + req.params.id)
-		});
-	})
-
-}) //app.post    
-
-app.get('/', function (req, res){
-	res.render('main.ejs');
-});
-
-app.get('/incheonAirportPolice', function (req, res){
-	res.render('incheonAirportPolice.ejs');
-});
-
-app.get('/posts', function (req, res){
-	var currentPage = 1;
-	if (typeof req.query.page !== 'undefined') {
-        currentPage = +req.query.page;
-    	}
-			postModel.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 10 }, function(err, results) {
-         if(err){
-         console.log("error");
-         console.log(err);
-     } else {
-    	var pageNumber = (results.length)/3;
-			pageNumber = Math.ceil(pageNumber) ;
-    	    pageSize = results.limit;
-            pageCount = (results.total)/(results.limit);
-    		pageCount = Math.ceil(pageCount);
-    	    totalPosts = results.total;
-    	console.log(results.docs)
-    	res.render('mainPage.ejs', {
-    		postModels: results.docs,
-    		pageSize: pageSize,
-    		pageCount: pageCount,
-    		totalPosts: totalPosts,
-    		currentPage: currentPage
-    	})//res.render
-     }//else
-     });//paginate
-	
-});
+// routes ======================================================================
+require('./app/routes.js')(app,passport); // load our routes and pass in our app
 
 //start the server
 app.listen(3000, function(){
@@ -185,5 +46,3 @@ app.listen(3000, function(){
 })
 
 
-// routes ======================================================================
-//require('./routes.js')(app); // load our routes and pass in our app
