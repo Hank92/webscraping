@@ -103,6 +103,10 @@ app.get('/', function (req, res){
 	res.render('main.ejs');
 });
 
+app.get('/trafficSixCamp', function (req, res){
+	res.render('trafficSixCamp.ejs');
+});
+
 app.get('/incheonAirportPolice', isLoggedInIncheonAirport, function (req, res){
 	var currentPage = 1;
 	if (typeof req.query.page !== 'undefined') {
