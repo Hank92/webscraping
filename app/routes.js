@@ -75,7 +75,7 @@ app.delete('/incheonAirportPolice/:id', isLoggedInIncheonAirport, function(req, 
 	
 })
 //post a comment on humor board
-app.post('/humor_board/:id', isLoggedInToPost, function (req, res){
+app.post('/humor_board/:id', isLoggedIn, function (req, res){
 	postModel.find({_id: req.params.id}, function(err, item){
 		if(err) return next("error finding blog post.");
 		item[0].userComments.push({userPost : req.body.userPost})
@@ -87,7 +87,7 @@ app.post('/humor_board/:id', isLoggedInToPost, function (req, res){
 
 }) //app.post  
 
-app.post('/incheonAirportPolice',  function (req, res){
+app.post('/incheonAirportPolice', isLoggedIn, function (req, res){
 	var newIncheonAirportPost = new incheonPost ({
 		nickname: req.body.nickname,
 		text: req.body.text,
@@ -114,7 +114,7 @@ app.get('/incheonAirportPolices', isLoggedIn, function(req,res){
 	if (typeof req.query.page !== 'undefined') {
         currentPage = +req.query.page;
     	}
-		incheonPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 5 }, function(err, results) {
+		incheonPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 9 }, function(err, results) {
          if(err){
          console.log("error");
          console.log(err);
@@ -147,12 +147,12 @@ app.get('/trafficSixCamp', function (req, res){
 	res.render('trafficSixCamp.ejs');
 });
 
-app.get('/incheonAirportPolice', isLoggedInIncheonAirport, function (req, res){
+app.get('/incheonAirportPolice', function (req, res){
 	var currentPage = 1;
 	if (typeof req.query.page !== 'undefined') {
         currentPage = +req.query.page;
     	}
-		incheonPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 5 }, function(err, results) {
+		incheonPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 8 }, function(err, results) {
          if(err){
          console.log("error");
          console.log(err);
@@ -182,7 +182,7 @@ app.get('/humor_board', function (req, res){
 	if (typeof req.query.page !== 'undefined') {
         currentPage = +req.query.page;
     	}
-			postModel.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 10 }, function(err, results) {
+			postModel.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 9 }, function(err, results) {
          if(err){
          console.log("error");
          console.log(err);
@@ -233,7 +233,7 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 				// scrape all the images for the post
 				
 					$("[style *= 'line-height: 180%']").each(function(index){
-						var content = index + $(this).text();
+						var content =  $(this).text();
 							comments.push({content: content}); 	
 					})//scrape all the comments for the post
 

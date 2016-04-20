@@ -7,8 +7,6 @@
     
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
-<script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
     <!--call the css file -->
     <link rel='stylesheet' href='/css/humor_board.css'> 
 </head>
@@ -21,7 +19,7 @@
 <div class="row affix-row">
     <div class="col-sm-3 col-md-2 affix-sidebar">
     <div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
+  <div class="navbar navbar-inverse" role="navigation">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
       <span class="sr-only">Toggle navigation</span>
@@ -78,53 +76,24 @@
     <div class="container">
       
     <div class="page-header">
-      <h3><span class="glyphicon glyphicon-th-list"></span>유머게시판</h3>
+      <h3><span class="glyphicon glyphicon-th-list"></span>&nbsp;&nbsp;유머게시판</h3>
     </div>
 
-    <div class="container">
-  <div class="row">
-    <div class='list-group gallery'>
-            <div class='col-sm-4 col-xs-6 col-md-3 col-lg-3'>
-                <a class="thumbnail fancybox" rel="ligthbox" href="http://placehold.it/300x320.png">
-                    <img class="img-responsive" alt="" src="http://placehold.it/320x320" />
-                    <div class='text-center'>
-                        <small class='text-muted'>Image Title</small>
-                    </div> <!-- text-right / end -->
-                </a>
-            </div> <!-- col-6 / end -->
-            <div class='col-sm-4 col-xs-6 col-md-3 col-lg-3'>
-                <a class="thumbnail fancybox" rel="ligthbox" href="http://placehold.it/300x320.png">
-                    <img class="img-responsive" alt="" src="http://placehold.it/320x320" />
-                    <div class='text-center'>
-                        <small class='text-muted'>Image Title</small>
-                    </div> <!-- text-right / end -->
-                </a>
-            </div> <!-- col-6 / end -->
-            
-        </div> <!-- list-group / end -->
-  </div> <!-- row / end -->
-</div> <!-- container / end -->
+   
            <!-- LOCAL INFORMATION -->
-       <% for(var i = postModels.length-1; i > -1 ; i--  ) { %>
+            <div class="row">
 
-            <div class = "row">
-            <div class="col-sm-6 col-md-4">
-
-            <div class = "thumbnail">
-         <img src = "<%= postModels[i].image_url %>" alt = "이미지 로딩중.." class="img-responsive>
-            </div>
-            <div class = "title">
-            <a href= "/humor_board/<%= postModels[i].id %>"><h3><%= postModels[i].title %></h3></a>
-            </div>
-            </div>
-            </div>
-       <% }%>
-
-
+       <% for(var i = postModels.length-1; i > -1 ; i--) { %>
     
-
+            <a class="thumbnail" href="/humor_board/<%= postModels[i].id %>">
+                <img class="img-responsive" src="<%= postModels[i].image_url %>" alt="이미지 로딩중...">
+                <div class="text-center">
+                  <h4><%= postModels[i].title %></h4>
+                </div>
+            </a>
+       <% }%>
 </div>
-
+<div style = "float: center">       
 <% if (pageCount > 1) { %>  
 <ul class="pagination">  
   <% if (currentPage > 1) { %>
@@ -152,19 +121,10 @@
   <% } %>
 </ul>  
 <% } %> 
-      
+</div>    
 
-<script type="text/javascript">
-  $(document).ready(function(){
+</div>
 
-    $(".fancybox").fancybox({
-        openEffect: "none",
-        closeEffect: "none"
-    });
-});
-   
-  
-  </script>
 
 
 </body>

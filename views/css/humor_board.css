@@ -112,12 +112,13 @@
 
 
   .thumbnail { float:left; padding : 1%; width:200px; height:auto; overflow: hidden; }
-.thumbnail img {height:auto; width:100%; margin:0 auto; }
+.thumbnail img {height:auto; width:100%; margin:10 auto; }
 
 .thumbnail {
    width: 260px;
    height: 300px;
    overflow: auto;
+   margin: 20px;
  }
 
 .thumbnail > img {
@@ -125,21 +126,10 @@
    height: 200px;
  }
 
- .title {
-   width: 240px;
-   height: 90px;
-   position: relative; bottom: 5px; 
 
-  h3 {
+ .text-center {
      font-size: 12px;
      margin: 2px;
       }
 
 } 
-
-.gallery
-{
-    display: inline-block;
-    margin-top: 20px;
-   
-}

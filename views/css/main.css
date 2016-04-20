@@ -1,5 +1,5 @@
    body {
-    background-color: #E8E8E8 ;
+   
     padding-top:50px;
     padding-left: 50px;
     padding-right: 50px;
@@ -84,7 +84,7 @@ li { display: inline-block; }
 h1 { margin-bottom: 20px; }
 h1, h2 { text-align: center; }
 .container-fluid-1 {
-  background: #6699FF;
+  background: #E8E8E8 ;
   margin-bottom: 70px;
   padding-bottom: 30px;
 }
