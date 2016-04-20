@@ -28,6 +28,12 @@ app.get('/login', function(req, res) {
         res.render('login.ejs', { message: req.flash('loginMessage') }); 
     });
 
+//logout
+app.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
+    });
+
  app.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
@@ -43,7 +49,7 @@ app.post('/signup', passport.authenticate('local-signup', {
 
 // process the login form
 app.post('/login', passport.authenticate('local-login', {
-    successRedirect : '/', // redirect to the secure profile section
+    successRedirect : '/success', // redirect to the secure profile section
     failureRedirect : '/login', // redirect back to the signup page if there is an error
     failureFlash : true // allow flash messages
 }));
@@ -102,6 +108,40 @@ app.post('/incheonAirportPolice',  function (req, res){
 app.get('/', function (req, res){
 	res.render('main.ejs');
 });
+
+app.get('/incheonAirportPolices', isLoggedIn, function(req,res){
+	var currentPage = 1;
+	if (typeof req.query.page !== 'undefined') {
+        currentPage = +req.query.page;
+    	}
+		incheonPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 5 }, function(err, results) {
+         if(err){
+         console.log("error");
+         console.log(err);
+     } else {
+    	    pageSize = results.limit;
+            pageCount = (results.total)/(results.limit);
+    		pageCount = Math.ceil(pageCount);
+    	    totalPosts = results.total;
+    	console.log(results.docs)
+    	res.render('incheonAirportPoliceS.ejs', {  
+    		user: req.user,  	
+    		incheonPosts: results.docs,
+    		pageSize: pageSize,
+    		pageCount: pageCount,
+    		totalPosts: totalPosts,
+    		currentPage: currentPage
+    	})//res.render
+    	console.log(req.user)
+     }//else
+     });//paginate
+})
+
+
+
+app.get('/success', isLoggedIn, function(req,res){
+	res.render('mainS.ejs', {user: req.user})
+})
 
 app.get('/trafficSixCamp', function (req, res){
 	res.render('trafficSixCamp.ejs');
@@ -235,6 +275,8 @@ request('http://bhu.co.kr/bbs/board.php?bo_table=best&page=1', function(err, res
 
 });
 
+
+
 // route middleware to make sure a user is logged in to post on humor board
 function isLoggedInToPost(req, res, next) {
 
@@ -246,6 +288,15 @@ function isLoggedInToPost(req, res, next) {
     res.redirect('/posts/' + req.params.id);
 }
 
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on 
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/login');
+}
 // route middleware to make sure a user is logged in
 function isLoggedInIncheonAirport(req, res, next) {
 

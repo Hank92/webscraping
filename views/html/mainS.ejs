@@ -35,31 +35,20 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li><p class="navbar-text">계정이 있나요?</p></li>
+        <li><p class="navbar-text">안녕하세요</p></li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>로그인</b> <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b><%= user.local.email %></b> <span class="caret"></span></a>
             <ul id="login-dp" class="dropdown-menu">
                 <li>
                      <div class="row">
                             <div class="col-md-12">
-                                  <form  role="form" method="post" action="/login" accept-charset="UTF-8" id="login-nav">
+                                  <form class="form" role="form" method="post" action="/login" accept-charset="UTF-8" id="login-nav">
+                                
                                         <div class="form-group">
-                                             <label class="sr-only" for="email">이메일</label>
-                                             <input type="email" class="form-control" id="user_email" name="email" placeholder="이메일" required>
-                                        </div>
-                                        <div class="form-group">
-                                             <label class="sr-only" for="password">비밀번호</label>
-                                             <input type="password" class="form-control" id="user_password" name="password" placeholder="비밀번호" required>
-                                             <div class="help-block text-right"><a href="">비밀번호를 잃어버리셨나요?</a></div>
-                                        </div>
-                                        <div class="form-group">
-                                             <button type="submit" class="btn btn-primary btn-block">로그인</button>
+                                             <button type="submit" class="btn btn-primary btn-block">로그아웃</button>
                                         </div>
                                        
                                  </form>
-                            </div>
-                            <div class="bottom text-center">
-                                새로 오셨나요? <a href="/signup"><b>가입하기</b></a>
                             </div>
                      </div>
                 </li>
@@ -75,7 +64,7 @@
     <div class="row">
         </br>
         <div class="col-sm-2">
-            <a href="/incheonAirportPolice" class="btn btn-lg btn-yellow">공항 기동대</a>
+            <a href="/incheonAirportPolices" class="btn btn-lg btn-yellow">공항 기동대</a>
             <a href="#" class="btn btn-lg btn-yellow">계양 방순대</a>
             <a href="#" class="btn btn-lg btn-yellow">서구 방순대</a>
         </div>
@@ -91,7 +80,7 @@
         </div>
         <div class="col-sm-2">
             <a href="#" class="btn btn-lg btn-yellow">인천 지방청</a>
-            <a href="#" class="btn btn-lg btn-yellow">교육  센터</a>
+            <a href="#" class="btn btn-lg btn-yellow">교육 센터</a>
             
         </div>
         <div class="col-sm-2">
