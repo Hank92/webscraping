@@ -54,7 +54,7 @@ app.post('/login', passport.authenticate('local-login', {
     failureFlash : true // allow flash messages
 }));
 
-app.get('/posts/:id', function(req, res){
+app.get('/humor_board/:id', function(req, res){
 	var postId = req.postId;
 	postId.userComments.push({ userPost: req.query.userPost});
 	postId.save();
@@ -75,13 +75,13 @@ app.delete('/incheonAirportPolice/:id', isLoggedInIncheonAirport, function(req, 
 	
 })
 //post a comment on humor board
-app.post('/posts/:id', isLoggedInToPost, function (req, res){
+app.post('/humor_board/:id', isLoggedInToPost, function (req, res){
 	postModel.find({_id: req.params.id}, function(err, item){
 		if(err) return next("error finding blog post.");
 		item[0].userComments.push({userPost : req.body.userPost})
 		item[0].save(function(err, data){
 			if (err) res.send(err)
-			else res.redirect('/posts/' + req.params.id)
+			else res.redirect('/humor_board/' + req.params.id)
 		});
 	})
 
@@ -177,7 +177,7 @@ app.get('/incheonAirportPolice', isLoggedInIncheonAirport, function (req, res){
 });
 
 
-app.get('/posts', function (req, res){
+app.get('/humor_board', function (req, res){
 	var currentPage = 1;
 	if (typeof req.query.page !== 'undefined') {
         currentPage = +req.query.page;
@@ -285,7 +285,7 @@ function isLoggedInToPost(req, res, next) {
         return next();
 
     // if they aren't redirect them to the home page
-    res.redirect('/posts/' + req.params.id);
+    res.redirect('/humor_board/' + req.params.id);
 }
 
 function isLoggedIn(req, res, next) {
