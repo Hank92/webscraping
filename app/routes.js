@@ -12,6 +12,54 @@ var free_boardPost = require('../app/models/free_boardPost');
 
 module.exports = function (app, passport){
 
+app.get('/apkrMain', function (req, res){
+	var currentPage = 1;
+	if (typeof req.query.page !== 'undefined') {
+        currentPage = +req.query.page;
+    	}
+			postModel.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 13 }, function(err, results) {
+         if(err){
+         console.log("error");
+         console.log(err);
+     } else {
+    	    pageSize = results.limit;
+            pageCount = (results.total)/(results.limit);
+    		pageCount = Math.ceil(pageCount);
+    	    totalPosts = results.total;
+    	console.log(results.docs)
+
+    	res.render('apkrMain.ejs', {
+    		postModels: results.docs,
+    		pageSize: pageSize,
+    		pageCount: pageCount,
+    		totalPosts: totalPosts,
+    		currentPage: currentPage
+    	})//res.render
+     }//else
+     });//paginate
+	
+});
+
+app.get('/apkrMain/:id', function(req, res){
+	var postId = req.postId;
+	postId.userComments.push({ userPost: req.query.userPost});
+	postId.save();
+	res.render('individualAPKR.ejs', {postModel: postId});
+	console.log(postId)//finds the matching object
+});
+
+app.post('/apkrMain/:id', function (req, res){
+	postModel.find({_id: req.params.id}, function(err, item){
+		if(err) return next("error finding blog post.");
+		item[0].userComments.push({userPost : req.body.userPost})
+		item[0].save(function(err, data){
+			if (err) res.send(err)
+			else res.redirect('/apkrMain/' + req.params.id)
+		});
+	})
+
+}) //app.post 
+
 app.param('id', function(req, res, next, id){
 	postModel.findById(id, function(err, docs){
 		if(err) res.json(err);
@@ -104,7 +152,7 @@ app.get('/free_board', function (req, res){
 	if (typeof req.query.page !== 'undefined') {
         currentPage = +req.query.page;
     	}
-		free_boardPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 10 }, function(err, results) {
+		free_boardPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 13 }, function(err, results) {
          if(err){
          console.log("error");
          console.log(err);
