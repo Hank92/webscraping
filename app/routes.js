@@ -8,6 +8,7 @@ var	methodOverride = require('method-override');
 
 var postModel = require('../app/models/post');
 var incheonPost = require('../app/models/incheonAirportPost');
+var free_boardPost = require('../app/models/free_boardPost');
 
 module.exports = function (app, passport){
 
@@ -86,6 +87,50 @@ app.post('/humor_board/:id', isLoggedIn, function (req, res){
 	})
 
 }) //app.post  
+
+app.get('/free_board', function (req, res){
+	var currentPage = 1;
+	if (typeof req.query.page !== 'undefined') {
+        currentPage = +req.query.page;
+    	}
+		free_boardPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 10 }, function(err, results) {
+         if(err){
+         console.log("error");
+         console.log(err);
+     } else {
+    	    pageSize = results.limit;
+            pageCount = (results.total)/(results.limit);
+    		pageCount = Math.ceil(pageCount);
+    	    totalPosts = results.total;
+    	console.log(results.docs)
+    	res.render('free_board.ejs', {  
+    		free_boardPosts: results.docs,
+    		pageSize: pageSize,
+    		pageCount: pageCount,
+    		totalPosts: totalPosts,
+    		currentPage: currentPage
+    	})//res.render
+    	
+     }//else
+     });//paginate
+});
+
+app.post('/free_board', function (req, res){
+	var newfree_boardPost = new free_boardPost ({
+		title: req.body.title,
+		text: req.body.text
+		
+	});
+	newfree_boardPost.save(function(err){
+		if(err){
+			console.log("error!")
+			res.send(err)
+		}
+		else{
+			res.redirect('/free_board')
+		}
+	});
+});
 
 app.post('/incheonAirportPolice', isLoggedIn, function (req, res){
 	var newIncheonAirportPost = new incheonPost ({
