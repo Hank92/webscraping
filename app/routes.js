@@ -23,6 +23,17 @@ app.param('id', function(req, res, next, id){
 			});	
 });
 
+app.param('id', function(req, res, next, id){
+	free_boardPost.findById(id, function(err, docs){
+		if(err) res.json(err);
+		else
+			{
+				req.postIds = docs;
+				next();
+			}
+			});	
+});
+
 app.get('/login', function(req, res) {
 
         // render the page and pass in any flash data if it exists
@@ -115,10 +126,60 @@ app.get('/free_board', function (req, res){
      });//paginate
 });
 
-app.post('/free_board', function (req, res){
+app.get('/free_boards', isLoggedIn, function(req,res){
+	var currentPage = 1;
+	if (typeof req.query.page !== 'undefined') {
+        currentPage = +req.query.page;
+    	}
+		free_boardPost.paginate({}, {sort: {"_id":-1}, page: currentPage, limit: 10 }, function(err, results) {
+         if(err){
+         console.log("error");
+         console.log(err);
+     } else {
+    	    pageSize = results.limit;
+            pageCount = (results.total)/(results.limit);
+    		pageCount = Math.ceil(pageCount);
+    	    totalPosts = results.total;
+    	console.log(results.docs)
+    	res.render('free_boards.ejs', {  
+    		user: req.user,  	
+    		free_boardPosts: results.docs,
+    		pageSize: pageSize,
+    		pageCount: pageCount,
+    		totalPosts: totalPosts,
+    		currentPage: currentPage
+    	})//res.render
+    	console.log(req.user)
+     }//else
+     });//paginate
+})
+
+
+app.get('/free_board/:id', function(req, res){
+	var postId = req.postIds ;
+	postId.freeBoardComments.push({ userBoardPost: req.query.userBoardPost});
+	postId.save();
+	res.render('individualfree_Board.ejs', {post: postId});
+	console.log(postId)//finds the matching object
+});
+
+app.post('/free_board/:id', isLoggedIn, function (req, res){
+	free_boardPost.find({_id: req.params.id}, function(err, item){
+		if(err) return next("error finding blog post.");
+		item[0].userComments.push({userBoardPost : req.body.userBoardPost})
+		item[0].save(function(err, data){
+			if (err) res.send(err)
+			else res.redirect('/free_board/' + req.params.id)
+		});
+	})
+
+}) //app.post  
+
+app.post('/free_board', isLoggedIn, function (req, res){
 	var newfree_boardPost = new free_boardPost ({
 		title: req.body.title,
-		text: req.body.text
+		text: req.body.text,
+		nickname: req.body.nickname
 		
 	});
 	newfree_boardPost.save(function(err){

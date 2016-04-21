@@ -114,7 +114,7 @@
                   <thead>
                     <tr>
                         <th></th>
-                       
+                        <th class="hidden-xs">게시물 #</th>
                         <th>게시 시간</th>
                         <th>제목</th>
                     </tr> 
@@ -125,6 +125,7 @@
                             <td align="center">
                               <a class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></a>
                             </td>
+                            <td class="hidden-xs"><%= free_boardPosts.length+1 - i %></td>
                             <td><%= free_boardPosts[i].posted.toLocaleDateString() %></td>
                             <td><a href ="/free_board/<%= free_boardPosts[i].id %>"><%= free_boardPosts[i].title %></a></td>
                           </tr>
@@ -186,11 +187,11 @@
                   <div class="form-group">
                    
                    작성자  <div class="form-group">
-                    <input type="text" class="form-control" name="nickname" id="disabledInput" value="로그인 하셔야 댓글을 달수 있습니다" title = "이메일을 변경하시면 삭제 권한을 잃게됩니다" required>
+                    <input type="text" class="form-control" name="nickname" id="disabledInput" value="<%= user.local.email %>" title = "이메일을 변경하시면 삭제 권한을 잃게됩니다" required>
                     </div>
 
                     제목  <div class="form-group">
-                    <input type="text" class="form-control" name="title" id="freeboardUser-title" value="로그인 하셔야 댓글을 달수 있습니다" title = "이메일을 변경하시면 삭제 권한을 잃게됩니다" required>
+                    <input type="text" class="form-control" name="title" id="freeboardUser-title" placeholder = "예) 의무 경찰 붙으려면 어떻게 해야해요?" title = "이메일을 변경하시면 삭제 권한을 잃게됩니다" required>
                     </div>
                   
 
